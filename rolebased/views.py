@@ -1,5 +1,5 @@
 # from .serializers import UserSerializers
-from .serializers import UserSerializers, UserLoginSerializer
+from .serializers import *
 
 from .models import *
 from rest_framework import generics
@@ -13,6 +13,7 @@ import random
 import math
 from addmin.models import *
 from rest_framework.parsers import MultiPartParser, FormParser
+
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializers
@@ -256,7 +257,7 @@ class Sendmail(APIView):
         url =request.data.get('url')
         if not email:
             return Response({'status': False, 'message': 'Email address is missing'})
- 
+
         email_message = EmailMessage(
             'Change Password',
             f'given url {url}!\n\n'
@@ -266,14 +267,14 @@ class Sendmail(APIView):
             settings.EMAIL_HOST_USER,
             [email]
         )
- 
+
         try:
             email_message.send()
             return Response({'status': True, 'message': 'Email sent successfully'})
         except Exception as e:
             return Response({'status': False, 'message': 'Failed to send email', 'error': str(e)})
 
-class UserData(APIView):
+class UserData1(APIView):
     def post(self, request):
         Email=request.data.get("userEmail")
         s=User.objects.filter(email=Email)
@@ -428,7 +429,7 @@ class TotalUserOneData(APIView):
         s={
             "user":user1,"Amount":AmountData1,"StockForm":StockForm1,"widraw":widraw1,"Diposit":Diposit1
         }
-       
+
         return JsonResponse(s)
     def get(self, request, format=None):
         s=EmployeeData.objects.all()
@@ -465,7 +466,7 @@ def post_transaction(request):
         return JsonResponse({'message': 'Transaction saved successfully'}, status=201)
     except (ValueError, KeyError):
         return JsonResponse({'error': 'Invalid data'}, status=400)
-    
+
 
 @require_http_methods(["GET"])
 def get_messages_by_email(request):
@@ -573,4 +574,81 @@ class ContactInformationList(generics.ListAPIView):
     queryset = ContactInformation.objects.all()
     serializer_class = ContactInformationSerializer
 
+class Update_kyc(APIView):
+    def post(self, request):
+        try:
+            email = request.data.get('email')
+            bank_account = request.data.get('bankaccount')
+            ifsc_code = request.data.get('ifsccode')
+            pancard_image = request.FILES.get('pancard_image')
+            aadhaarcard_image = request.FILES.get('aadhaarcard_image')
 
+            # Retrieve the user
+            user = User.objects.get(email=email)
+
+            # Update fields
+            user.bankaccount = bank_account
+            user.ifsccode = ifsc_code
+            if pancard_image:
+                user.pancard_image = pancard_image
+            if aadhaarcard_image:
+                user.aadhaarcard_image = aadhaarcard_image
+
+            # Save the changes to the database
+            user.save()
+
+            return JsonResponse({'status': 'success', 'message': 'User details updated successfully.'})
+        except User.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'User not found.'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
+from rolebased.models import UserData
+
+class UserDataView(APIView):
+    def get(self, request):
+        users = UserData.objects.all()
+        serializer = UserDataSerializer(users, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = UserDataSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+class SendmailRegistrations(APIView):
+    def post(self, request):
+        email = request.data.get('to')  # Recipient's email address
+        user_id = request.data.get('userid')
+        password = request.data.get("password")
+
+        if not email:
+            return Response({'status': False, 'message': 'Email address is missing'})
+
+        # Construct the email message
+        email_subject = "Welcome to BrightFutureX!"
+        email_body = (
+            f"Dear User,\n\n"
+            f"Congratulations and welcome to BrightFutureX!\n\n"
+            f"Your account has been successfully created. Here are your login details:\n"
+            f"User ID: {user_id}\n"
+            f"Password: {password}\n\n"
+            "Please keep your credentials secure and change your password upon your first login.\n\n"
+            "If you have any questions or need assistance, feel free to reach out to our support team at support@brightfuturex.com.\n\n"
+            "Best regards,\n"
+            "The BrightFutureX Team"
+        )
+
+        email_message = EmailMessage(
+            email_subject,
+            email_body,
+            settings.EMAIL_HOST_USER,
+            [email]
+        )
+
+        try:
+            email_message.send()
+            return Response({'status': True, 'message': 'Email sent successfully'})
+        except Exception as e:
+            return Response({'status': False, 'message': 'Failed to send email', 'error': str(e)})

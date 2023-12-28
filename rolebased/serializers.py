@@ -11,7 +11,7 @@ class UserSerializers(serializers.ModelSerializer):
     class Meta:
         model=User
         fields=["email","first_name", "last_name","password" ,"username", "role", "phone_number", "pancard", "bankaccount","ifsccode", "aadhaarCardNumber", "aadhaarcard_image", "pancard_image"]
- 
+
     def create(self, validated_data):
         user = User(
             email=validated_data['email'],
@@ -52,7 +52,7 @@ class UserLoginSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid login credentials")
 
         try:
-         
+
             validation = {
                 'email': user.email,
                 "password": user.password,
@@ -124,3 +124,7 @@ class ContactInformationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactInformation
         fields = ['address', 'email', 'phone', 'social_media_facebook', 'social_media_instagram', 'social_media_linkedin', 'social_media_twitter']
+class UserDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserData
+        fields = ['name', 'email', 'user_id', 'utr_number', 'screenshot','accountHolderName']

@@ -6,5 +6,5 @@ admin.site.register(OTPVerifiaction)
 admin.site.register(Sheet)
 admin.site.register(EmployeeData)
 admin.site.register(AccountDetails)
-
+admin.site.register(UserData)
 

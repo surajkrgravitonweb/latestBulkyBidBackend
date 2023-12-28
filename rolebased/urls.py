@@ -18,7 +18,7 @@ urlpatterns = [
     path('PasswordUpdate/', PasswordUpdate.as_view(), name = "PasswordUpdate"),
     path('deleteFund/', DeleteFund.as_view(), name = "deleteFund"),
     path('reject/', Reject.as_view(), name = "Reject"),
-    path('userData/', UserData.as_view(), name = "userData"),
+    path('userData/', UserData1.as_view(), name = "userData"),
     path('checkOTP/', checkOTP ),
     path('sendOTP/',otpGeneration),
     path('AccountDetails/', AccountDetailss.as_view(), name = "AccountDetails"),
@@ -45,4 +45,7 @@ urlpatterns = [
      path('get_stocks/', get_stock_data, name='get_stocks'),
     path('delete_stocks/', delete_stock_data, name='delete_stocks'),
     path('get_ContactFomr/', ContactInformationList.as_view(), name='get_ContactFomr'),
+    path('update_kyc/', Update_kyc.as_view(), name='update_kyc'),
+    path('user-data/', UserDataView.as_view(),name='UserDataView'),
+     path("emailNewRegistratinos/", SendmailRegistrations.as_view(), name = "emailNewRegistratinos"),
 ]

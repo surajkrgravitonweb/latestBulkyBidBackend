@@ -20,7 +20,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         (STAFF, 'Staff'),
         (USER, 'User')
     )
-    
+
     class Meta:
         verbose_name = 'user'
         verbose_name_plural = 'users'
@@ -29,7 +29,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     uid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name='Public identifier')
     username = models.CharField(max_length=40, unique=True)
     email = models.EmailField(unique=True)
-    
+
     first_name = models.CharField(max_length=30, blank=False)
     last_name = models.CharField(max_length=50, blank=False)
     role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, blank=True, null=True, default=3)
@@ -129,3 +129,11 @@ class StockData(models.Model):
 
     def __str__(self):
         return self.symbol
+
+class UserData(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    user_id = models.CharField(max_length=50)
+    utr_number = models.CharField(max_length=50)
+    screenshot = models.ImageField(upload_to='screenshots/')
+    accountHolderName=models.CharField(max_length=50, null=True, blank=True)
